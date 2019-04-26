@@ -16,4 +16,8 @@ const favoriteBlog = blogs => {
   return blogs.length === 0 ? undefined : blogs.reduce(reducer, 0);
 };
 
+const mostBlogs = blogs => {};
+
+const mostLikes = blogs => {};
+
 module.exports = { dummy, totalLikes, favoriteBlog };

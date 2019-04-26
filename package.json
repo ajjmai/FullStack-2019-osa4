@@ -4,9 +4,9 @@
   "description": "Full Stack Open 2019 kurssin harjoitustehtävien vastaukset osa4: blogilista-tehtävät",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "watch": "nodemon index.js",
-    "test": "jest --verbose"
+    "start": "NODE_ENV=production node index.js",
+    "watch": "NODE_ENV=development nodemon index.js",
+    "test": "NODE_ENV=test jest --verbose --runInBand"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,8 @@
   },
   "devDependencies": {
     "jest": "^24.7.1",
-    "nodemon": "^1.18.11"
+    "nodemon": "^1.18.11",
+    "supertest": "^4.0.2"
   },
   "jest": {
     "testEnvironment": "node"
