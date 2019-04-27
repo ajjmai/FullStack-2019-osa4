@@ -118,8 +118,8 @@ test("blog without title is not added", async () => {
     likes: 10
   };
 
-  const initialContent = await api.get("/api/blogs");
-  length = initialContent.body.length;
+  const blogsAtStart = await api.get("/api/blogs");
+  length = blogsAtStart.body.length;
 
   await api
     .post("/api/blogs")
@@ -137,8 +137,8 @@ test("blog without url is not added", async () => {
     likes: 10
   };
 
-  const initialContent = await api.get("/api/blogs");
-  length = initialContent.body.length;
+  const blogsAtStart = await api.get("/api/blogs");
+  length = blogsAtStart.body.length;
 
   await api
     .post("/api/blogs")
@@ -147,6 +147,22 @@ test("blog without url is not added", async () => {
 
   const response = await api.get("/api/blogs");
   expect(response.body.length).toBe(length);
+});
+
+test("a note can be deleted", async () => {
+  const blogsAtStart = await api.get("/api/blogs");
+  length = blogsAtStart.body.length;
+
+  const blogToDelete = blogsAtStart.body[0];
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const blogsAtEnd = await api.get("/api/blogs");
+  expect(blogsAtEnd.body.length).toBe(length - 1);
+
+  const titles = blogsAtEnd.body.map(b => b.title);
+
+  expect(titles).not.toContain(blogToDelete.title);
 });
 
 afterAll(() => {

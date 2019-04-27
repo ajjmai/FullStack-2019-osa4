@@ -96,3 +96,5 @@ describe("favorite blog", () => {
     expect(result).toEqual(blogs[2]);
   });
 });
+
+// tänne vielä tehtävät 4.6 ja 4.7
