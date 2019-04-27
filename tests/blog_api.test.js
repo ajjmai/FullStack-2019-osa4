@@ -105,7 +105,8 @@ test("defaul value of likes is zero", async () => {
     .expect("Content-Type", /application\/json/);
 
   const response = await api.get("/api/blogs");
-  const likes = response.body.likes;
+  const body = response.body[response.body.length - 1];
+  const likes = body.likes;
   expect(likes).toBe(0);
 });
 
