@@ -32,13 +32,6 @@ const initialBlogs = [
     url:
       "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
     likes: 10
-  },
-  {
-    title: "TDD harms architecture",
-    author: "Robert C. Martin",
-    url:
-      "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
-    likes: 0
   }
 ];
 
@@ -67,8 +60,13 @@ test("there are two blogs", async () => {
 
 test("blogs have id-field called 'id' ", async () => {
   const response = await api.get("/api/blogs");
+  const data = response.body.map(b => b.id);
 
-  expect(response.body[0].id).toBeDefined();
+  const checkId = id => {
+    expect(id).toBeDefined();
+  };
+
+  data.forEach(checkId);
 });
 
 test("a valid blog can be added", async () => {
@@ -90,6 +88,25 @@ test("a valid blog can be added", async () => {
 
   expect(response.body.length).toBe(3);
   expect(title).toContain("Type wars");
+});
+
+test("defaul value of likes is zero", async () => {
+  const newBlog = {
+    title: "TDD harms architecture",
+    author: "Robert C. Martin",
+    url:
+      "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html"
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+  const likes = response.body.likes;
+  expect(likes).toBe(0);
 });
 
 afterAll(() => {
