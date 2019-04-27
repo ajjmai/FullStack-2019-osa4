@@ -80,7 +80,7 @@ test("a valid blog can be added", async () => {
   await api
     .post("/api/blogs")
     .send(newBlog)
-    .expect(201)
+    .expect(200)
     .expect("Content-Type", /application\/json/);
 
   const response = await api.get("/api/blogs");
@@ -101,13 +101,52 @@ test("defaul value of likes is zero", async () => {
   await api
     .post("/api/blogs")
     .send(newBlog)
-    .expect(201)
+    .expect(200)
     .expect("Content-Type", /application\/json/);
 
   const response = await api.get("/api/blogs");
   const body = response.body[response.body.length - 1];
   const likes = body.likes;
   expect(likes).toBe(0);
+});
+
+test("blog without title is not added", async () => {
+  const newBlog = {
+    author: "Robert C. Martin",
+    url:
+      "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
+    likes: 10
+  };
+
+  const initialContent = await api.get("/api/blogs");
+  length = initialContent.body.length;
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(400);
+
+  const response = await api.get("/api/blogs");
+  expect(response.body.length).toBe(length);
+});
+
+test("blog without url is not added", async () => {
+  const newBlog = {
+    title: "First class tests",
+    author: "Robert C. Martin",
+    likes: 10
+  };
+
+  const initialContent = await api.get("/api/blogs");
+  length = initialContent.body.length;
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(400);
+
+  const response = await api.get("/api/blogs");
+  expect(response.body.length).toBe(length);
 });
 
 afterAll(() => {
