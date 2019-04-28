@@ -1,47 +1,19 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
+const helper = require("./test_helper");
 
 const api = supertest(app);
 
 const Blog = require("../models/blog");
 
-const initialBlogs = [
-  {
-    title: "React patterns",
-    author: "Michael Chan",
-    url: "https://reactpatterns.com/",
-    likes: 7
-  },
-  {
-    title: "Go To Statement Considered Harmful",
-    author: "Edsger W. Dijkstra",
-    url:
-      "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-    likes: 5
-  },
-  {
-    title: "Canonical string reduction",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-    likes: 12
-  },
-  {
-    title: "First class tests",
-    author: "Robert C. Martin",
-    url:
-      "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
-    likes: 10
-  }
-];
-
 beforeEach(async () => {
   await Blog.deleteMany({});
 
-  let blogObject = new Blog(initialBlogs[0]);
+  let blogObject = new Blog(helper.initialBlogs[0]);
   await blogObject.save();
 
-  blogObject = new Blog(initialBlogs[1]);
+  blogObject = new Blog(helper.initialBlogs[1]);
   await blogObject.save();
 });
 
@@ -59,8 +31,7 @@ test("there are two blogs", async () => {
 });
 
 test("blogs have id-field called 'id' ", async () => {
-  const response = await api.get("/api/blogs");
-  const data = response.body.map(b => b.id);
+  const data = await helper.blogsInDb();
 
   const checkId = id => {
     expect(id).toBeDefined();

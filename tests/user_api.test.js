@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
+const helper = require("./test_helper");
 
 const api = supertest(app);
 
@@ -14,8 +15,7 @@ describe("when there is initially one user at db", () => {
   });
 
   test("creation succeeds with a fresh username", async () => {
-    const users = await User.find({});
-    const usersAtStart = users.map(u => u.toJSON());
+    const usersAtStart = await helper.usersInDb();
 
     const newUser = {
       username: "mluukkai",
@@ -29,22 +29,42 @@ describe("when there is initially one user at db", () => {
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
-    const users2 = await User.find({});
-    const usersAtEnd = users2.map(u => u.toJSON());
+    const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd.length).toBe(usersAtStart.length + 1);
 
     const usernames = usersAtEnd.map(u => u.username);
     expect(usernames).toContain(newUser.username);
   });
+});
 
+describe("no faulty users will be created", () => {
   test("creation fails with proper statuscode and message if username already taken", async () => {
-    const users = await User.find({});
-    const usersAtStart = users.map(u => u.toJSON());
+    const usersAtStart = await helper.usersInDb();
 
-    const newUser = {
+    const dublicateUser = {
       username: "root",
       name: "Superuser",
       password: "salainen"
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(dublicateUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    expect(result.body.error).toContain("`username` to be unique");
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd.length).toBe(usersAtStart.length);
+  });
+
+  test("username is at least 3 characters", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "av",
+      password: "sekred"
     };
 
     const result = await api
@@ -53,10 +73,71 @@ describe("when there is initially one user at db", () => {
       .expect(400)
       .expect("Content-Type", /application\/json/);
 
-    expect(result.body.error).toContain("`username` to be unique");
+    expect(result.body.error).toContain(
+      "is shorter than the minimum allowed length"
+    );
 
-    const users2 = await User.find({});
-    const usersAtEnd = users2.map(u => u.toJSON());
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd.length).toBe(usersAtStart.length);
+  });
+
+  test("password is at least 3 characters", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "abcde",
+      password: "pw"
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    expect(result.body.error).toContain(
+      "password must be at 3 characters long"
+    );
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd.length).toBe(usersAtStart.length);
+  });
+
+  test("no user without username is created", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      password: "password"
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    expect(result.body.error).toContain("`username` is required");
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd.length).toBe(usersAtStart.length);
+  });
+
+  test("no user without password is created", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "ajjmai"
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    expect(result.body.error).toContain("no password");
+
+    const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd.length).toBe(usersAtStart.length);
   });
 });
