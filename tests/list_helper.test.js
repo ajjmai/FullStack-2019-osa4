@@ -97,4 +97,58 @@ describe("favorite blog", () => {
   });
 });
 
-// tänne vielä tehtävät 4.6 ja 4.7
+describe("most blogs", () => {
+  test("mostblogs, of empty list is undefined", () => {
+    const result = listHelper.mostBlogs([]);
+    expect(result).toEqual();
+  });
+
+  test("mostblogs, when list has only one blog is that blog", () => {
+    const result = listHelper.mostBlogs([blogs[0]]);
+
+    const mostBlogs = {
+      author: "Michael Chan",
+      blogs: 1
+    };
+
+    expect(result).toEqual(mostBlogs);
+  });
+
+  test("mostblogs, of a bigger list is calculater right", () => {
+    const result = listHelper.mostBlogs(blogs);
+
+    const mostBlogs = {
+      author: "Robert C. Martin",
+      blogs: 3
+    };
+    expect(result).toEqual(mostBlogs);
+  });
+});
+
+describe("most likes", () => {
+  test("mostlikes, of empty list is undefined", () => {
+    const result = listHelper.mostLikes([]);
+    expect(result).toEqual();
+  });
+
+  test("mostlikes, when list has only one blog is that blog", () => {
+    const result = listHelper.mostLikes([blogs[0]]);
+
+    const mostLikes = {
+      author: "Michael Chan",
+      likes: 7
+    };
+
+    expect(result).toEqual(mostLikes);
+  });
+
+  test("mostlikes, of a bigger list is calculater right", () => {
+    const result = listHelper.mostLikes(blogs);
+
+    const mostLikes = {
+      author: "Edsger W. Dijkstra",
+      likes: 17
+    };
+    expect(result).toEqual(mostLikes);
+  });
+});
