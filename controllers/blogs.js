@@ -4,7 +4,11 @@ const Blog = require("../models/blog");
 const User = require("../models/user");
 
 blogRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({}).populate("user");
+  const blogs = await Blog.find({}).populate("user", {
+    username: 1,
+    name: 1,
+    id: 1
+  });
   response.json(blogs.map(b => b.toJSON()));
 });
 
@@ -51,8 +55,19 @@ blogRouter.get("/:id", async (request, response, next) => {
 
 blogRouter.delete("/:id", async (request, response, next) => {
   try {
-    await Blog.findByIdAndRemove(request.params.id);
-    response.status(204).end();
+    const decodedToken = jwt.verify(request.token, process.env.SECRET);
+    if (!request.token || !decodedToken.id) {
+      return response.status(401).json({ error: "token missing or invalid" });
+    }
+    const user = await User.findById(decodedToken.id);
+    const blog = await Blog.findById(request.params.id);
+
+    if (blog.user.toString() === user._id.toString()) {
+      await Blog.findByIdAndRemove(request.params.id);
+      response.status(204).end();
+    } else {
+      return response.status(401).json({ error: "token missing or invalid" });
+    }
   } catch (exception) {
     next(exception);
   }
