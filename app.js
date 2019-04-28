@@ -18,6 +18,7 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true });
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(middleware.tokenExtractor);
 app.use("/api/blogs", blogRouter);
 app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
