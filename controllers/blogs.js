@@ -53,6 +53,19 @@ blogRouter.get("/:id", async (request, response, next) => {
   }
 });
 
+blogRouter.get("/:id/comments", async (request, response, next) => {
+  try {
+    const blog = await Blog.findById(request.params.id);
+    if (blog) {
+      response.json(blog.comments);
+    } else {
+      response.status(404).end();
+    }
+  } catch (exception) {
+    next(exception);
+  }
+});
+
 blogRouter.delete("/:id", async (request, response, next) => {
   try {
     const decodedToken = jwt.verify(request.token, process.env.SECRET);

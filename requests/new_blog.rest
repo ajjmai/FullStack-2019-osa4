@@ -3,8 +3,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haW1laSIsImlkIjoiNWNjNWJjOWVlZDU3MzEyNGZkZTcxMDE5IiwiaWF0IjoxNTU2NDY3NDU2fQ.fKsiKFBUehlpHrv95nRg997M04SPXqMBEcyi6mqxRgk
 
 {
-  "title": "Canonical string reduction",
-  "author": "Edsger W. Dijkstra",
-  "url": "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-  "likes": 12
+  "title": "Type wars vol. 2",
+  "author": "Robert C. Martin",
+  "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html"
 }
